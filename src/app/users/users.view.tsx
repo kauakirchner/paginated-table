@@ -1,36 +1,29 @@
-'use client'
-
+import Loading from '~/components/ui/loading'
+import Pagination from './pagination'
 import {
   Table,
-  TableBody,
-  TableCell,
-  TableHead,
+  TableCaption,
   TableHeader,
   TableRow,
-  TableCaption,
+  TableHead,
+  TableBody,
+  TableCell,
   TableFooter
-} from '~/components/ui/table'
-import Pagination from './Pagination'
-import Loading from './Loading'
-import fetchUsers, { User, PaginatedResult } from './api'
-import { useQuery } from '@tanstack/react-query'
-import usePagination from './usePagination'
+} from '../../components/ui/table'
+import usePagination from './users.model'
 
-const UsersTable = () => {
-  const {
-    page,
-    handleNextPage,
-    searchParams,
-    // handleFirstPage,
-    handlePreviousPage
-  } = usePagination()
+type Props = ReturnType<typeof usePagination>
 
-  const { data, isLoading, error } = useQuery<PaginatedResult<User>>({
-    queryKey: ['users', page],
-    queryFn: () => fetchUsers(Number(searchParams.get('page') ?? 1))
-  })
-
+const UsersTableView = ({
+  data,
+  isLoading,
+  error,
+  page,
+  handleNextPage,
+  handlePreviousPage
+}: Props) => {
   if (error) {
+    console.log('err: ', error)
     return <span>unexpected error</span>
   }
 
@@ -50,7 +43,7 @@ const UsersTable = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data?.users?.map((user) => (
+          {data?.users.map((user) => (
             <TableRow key={user.id}>
               <TableCell className="font-medium">{user.id}</TableCell>
               <TableCell>{user.name}</TableCell>
@@ -61,7 +54,7 @@ const UsersTable = () => {
         <TableFooter>
           <TableRow>
             <TableCell colSpan={3}>Total</TableCell>
-            <TableCell className="text-right">{data?.users?.length}</TableCell>
+            <TableCell className="text-right">{data?.users.length}</TableCell>
           </TableRow>
         </TableFooter>
       </Table>
@@ -74,4 +67,4 @@ const UsersTable = () => {
   )
 }
 
-export default UsersTable
+export default UsersTableView

@@ -1,31 +1,29 @@
+import { useQuery } from '@tanstack/react-query'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import fetchUsers from './api'
+import { PaginatedResult, User } from './users.type'
 
 const usePagination = () => {
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const router = useRouter()
-  const page = searchParams.get('page')
+  const page = Number(searchParams.get('page')) || 1
   const urlParams = new URLSearchParams()
-
-  if (!page) {
-    urlParams.set('page', String(1))
-    router.replace(`${pathname}?${urlParams.toString()}`)
-  }
 
   const handleNextPage = (totalPages: number | undefined) => {
     if (Number(page) === totalPages) {
       return
     }
-    const nextPage = Number(page) + 1
+    const nextPage = page + 1
     urlParams.set('page', String(nextPage))
     router.replace(`${pathname}?${urlParams.toString()}`)
   }
 
   const handlePreviousPage = () => {
-    if (Number(page) === 1) {
+    if (page === 1) {
       return
     }
-    const nextPage = Number(page) - 1
+    const nextPage = page - 1
     urlParams.set('page', String(nextPage))
     router.replace(`${pathname}?${urlParams.toString()}`)
   }
@@ -36,12 +34,20 @@ const usePagination = () => {
     router.replace(`${pathname}?${urlParams.toString()}`)
   }
 
+  const { data, isLoading, error } = useQuery<PaginatedResult<User>>({
+    queryKey: ['users', page],
+    queryFn: () => fetchUsers(page)
+  })
+
   return {
-    page,
+    page: page,
     handleNextPage,
     searchParams,
     handlePreviousPage,
-    handleFirstPage
+    handleFirstPage,
+    data,
+    isLoading,
+    error
   }
 }
 

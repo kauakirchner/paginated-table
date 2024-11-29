@@ -1,8 +1,4 @@
-export type User = {
-  id: number
-  name: string
-  email: string
-}
+import { PaginatedResult, User } from './users.type'
 
 const generateUsers = (count: number): User[] =>
   Array.from({ length: count }, (_, index) => ({
@@ -12,11 +8,6 @@ const generateUsers = (count: number): User[] =>
   }))
 
 const users = generateUsers(100)
-
-export interface PaginatedResult<T> {
-  users: T[]
-  totalPages: number
-}
 
 const fetchUsers = async (page: number = 1): Promise<PaginatedResult<User>> => {
   if (page < 1) {

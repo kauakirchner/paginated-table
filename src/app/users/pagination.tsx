@@ -8,7 +8,7 @@ import {
   PaginationNext,
   PaginationEllipsis,
   Pagination as ShadPagination
-} from '../ui/pagination'
+} from '../../components/ui/pagination'
 
 interface Props {
   onNextPage: () => void
