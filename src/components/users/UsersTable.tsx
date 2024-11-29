@@ -10,47 +10,25 @@ import {
   TableCaption,
   TableFooter
 } from '~/components/ui/table'
-import { useQuery } from '@tanstack/react-query'
-import fetchUsers, { User, PaginatedResult } from './api'
-import { usePathname, useSearchParams, useRouter } from 'next/navigation'
 import Pagination from './Pagination'
 import Loading from './Loading'
+import fetchUsers, { User, PaginatedResult } from './api'
+import { useQuery } from '@tanstack/react-query'
+import usePagination from './usePagination'
 
 const UsersTable = () => {
-  const searchParams = useSearchParams()
-  const pathname = usePathname()
-  const router = useRouter()
-  const page = searchParams.get('page')
-  const urlParams = new URLSearchParams()
+  const {
+    page,
+    handleNextPage,
+    searchParams,
+    // handleFirstPage,
+    handlePreviousPage
+  } = usePagination()
 
   const { data, isLoading, error } = useQuery<PaginatedResult<User>>({
     queryKey: ['users', page],
-    queryFn: () => fetchUsers(Number(searchParams.get('page')))
+    queryFn: () => fetchUsers(Number(searchParams.get('page') ?? 1))
   })
-
-  const handleNextPage = () => {
-    if (Number(page) === data?.totalPages) {
-      return
-    }
-    const nextPage = Number(page) + 1
-    urlParams.set('page', String(nextPage))
-    router.replace(`${pathname}?${urlParams.toString()}`)
-  }
-
-  const handlePreviousPage = () => {
-    if (Number(page) === 1) {
-      return
-    }
-    const nextPage = Number(page) - 1
-    urlParams.set('page', String(nextPage))
-    router.replace(`${pathname}?${urlParams.toString()}`)
-  }
-
-  // const handleFirstPage = () => {
-  //   const urlParams = new URLSearchParams()
-  //   urlParams.set('page', '1')
-  //   router.replace(`${pathname}?${urlParams.toString()}`)
-  // }
 
   if (error) {
     return <span>unexpected error</span>
@@ -88,7 +66,7 @@ const UsersTable = () => {
         </TableFooter>
       </Table>
       <Pagination
-        onNextPage={handleNextPage}
+        onNextPage={() => handleNextPage(data?.totalPages)}
         onPreviousPage={handlePreviousPage}
         currentPage={Number(page) || 1}
       />
