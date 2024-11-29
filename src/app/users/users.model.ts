@@ -11,7 +11,7 @@ const usePagination = () => {
   const urlParams = new URLSearchParams()
 
   const handleNextPage = (totalPages: number | undefined) => {
-    if (Number(page) === totalPages) {
+    if (page === totalPages) {
       return
     }
     const nextPage = page + 1
@@ -40,7 +40,7 @@ const usePagination = () => {
   })
 
   return {
-    page: page,
+    page,
     handleNextPage,
     searchParams,
     handlePreviousPage,
